@@ -1,0 +1,7 @@
+README.md
+setup.py
+pool_workers/__init__.py
+pool_workers.egg-info/PKG-INFO
+pool_workers.egg-info/SOURCES.txt
+pool_workers.egg-info/dependency_links.txt
+pool_workers.egg-info/top_level.txt

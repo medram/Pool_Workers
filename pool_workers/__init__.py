@@ -124,7 +124,7 @@ class Pool:
 
         # create all threads
         for i in range(self.max_worker):
-            self.threads.append(Worker(f'Worker_{i} ({self.name})', self.queue, self.result_queue, wait_queue=self.wait_queue, callback=self.callback))
+            self.threads.append(Worker(f'Worker_{i}_({self.name})', self.queue, self.result_queue, wait_queue=self.wait_queue, callback=self.callback))
 
         # start all threads
         for t in self.threads:
