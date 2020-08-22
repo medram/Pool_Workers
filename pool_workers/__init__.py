@@ -4,7 +4,7 @@ import threading
 
 from queue import Queue, Empty
 
-
+# Default exception handler
 def execption_handler(thread_name, exception):
     print(f'{thread_name}: {exception}')
 
@@ -30,7 +30,7 @@ class Worker(threading.Thread):
         self._abort.set()
         # print(f'{self.name} is stopping...')
         self.block(block)
-        print(f'{self.name} is stopped')
+        # print(f'{self.name} is stopped')
 
     def aborted(self):
         return self._abort.is_set()
@@ -54,7 +54,7 @@ class Worker(threading.Thread):
     def _pause_now(self):
         """ block the code for a while """
         while self.paused():
-            print(f'{self.name} paused for 0.5s...')
+            # print(f'{self.name} paused for 0.5s...')
             time.sleep(0.5)
 
     def block(self, block=True):
@@ -69,7 +69,7 @@ class Worker(threading.Thread):
                 self._idle.clear()
             except Empty:
                 # the queue is empty.
-                print(f'{self.name}: The Queue is empty.')
+                # print(f'{self.name}: The Queue is empty.')
                 self._idle.set()
                 # abort the thread if the queue is empty.
                 if not self.wait_queue:
@@ -80,14 +80,14 @@ class Worker(threading.Thread):
 
             # the task is available to work with.
             try:
-                print(f'{self.name} processing...')
+                # print(f'{self.name} processing...')
                 r = func(*args, **kwargs)
                 self.result.put(r)
                 if self.callback:
                     self.callback(r)
 
             except Exception as e:
-                print('Exception has occured')
+                # print('Exception has occured')
                 self.execption_handler(self.name, e)
             finally:
                 self.queue.task_done()
@@ -124,7 +124,7 @@ class Pool:
 
         # create all threads
         for i in range(self.max_worker):
-            self.threads.append(Worker(f'Worker_{i}_({self.name})', self.queue, self.result_queue, wait_queue=self.wait_queue, callback=self.callback))
+            self.threads.append(Worker(f'Worker_{i}_{self.name}', self.queue, self.result_queue, wait_queue=self.wait_queue, callback=self.callback))
 
         # start all threads
         for t in self.threads:
@@ -151,7 +151,7 @@ class Pool:
         # clearing resources
         # self.threads = [] # I should do this after all threads are shutted down.
         self.result_queue = None
-        print(f'{self.name} is shutted down')
+        # print(f'{self.name} is shutted down')
 
     def join(self, timeout=None):
         """ wait until all the queue tasks be completed """
@@ -183,7 +183,7 @@ class Pool:
 
     def pause(self, timeout=0, block=False):
         """ after_abort: pause an amount of time (timeout) after all threads of the pool has stopped/aborted """
-        print(f'>>>>>>>>>> {self.name} is paused <<<<<<<<<<<<')
+        # print(f'>>>>>>>>>> {self.name} is paused <<<<<<<<<<<<')
         for t in self.threads:
             t.pause()
         if timeout:
@@ -198,7 +198,7 @@ class Pool:
         return True
 
     def resume(self, block=False):
-        print(f'>>>>>>>>>> {self.name} is resumed <<<<<<<<<<<<')
+        # print(f'>>>>>>>>>> {self.name} is resumed <<<<<<<<<<<<')
         for t in self.threads:
             t.resume()
         return True
