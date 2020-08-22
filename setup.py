@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setuptools.setup(
 	name = 'pool_workers',
-	version = '0.0.1',
+	version = '0.0.2',
 	author='Mohammed ER-Ramouchy',
 	author_email='mohammed@ramouchy.com',
 	description='A small package for dealing with pools, workers and queues.',
