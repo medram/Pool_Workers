@@ -2,8 +2,8 @@
 Pool_Workers is a small package for dealing with pools, workers and queues.
 
 ## Installation:
-```
-$ pip install pool_workers
+```bash
+pip install pool_workers
 ```
 
 ## How to Use?
@@ -12,7 +12,12 @@ Please see some examples at 'examples' folder.
 ## More info:
 Describe some useful functions at pool & worker objects
 
-```Python
+```python
+"""
+Default params:
+Pool(max_workers=os.cpu_count() + 4, name=None, queue=None, wait_queue=True,
+        result_queue=None, workers_sleep=0.5, callback=None, execption_handler=execption_handler)
+"""
 pool = Pool(...)
 
 pool.start()		# Start all workers to process queue tasks.
@@ -28,6 +33,11 @@ pool.resume()		# resume the all workers
 pool.count()		# count workers
 pool.update()		# adjust the number of workers
 
+"""
+default params:
+Worker(name, queue, result=None, wait_queue=False, sleep=0.5, callback=None,
+        execption_handler=execption_handler)
+"""
 worker = Worker(...)
 
 worker.start()
