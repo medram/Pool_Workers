@@ -124,7 +124,7 @@ class Pool:
         return any((t.is_alive() for t in self.threads))
 
     def is_idle(self):
-        return False not in (t.idle() for t in self.threads)
+        return False not in (t._idle.is_set() for t in self.threads)
 
     def is_done(self):
         return self.queue.empty()
