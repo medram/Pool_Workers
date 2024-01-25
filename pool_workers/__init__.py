@@ -4,7 +4,11 @@ import os
 import threading
 import time
 from queue import Empty, Queue
-from typing import Callable, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
+from pydantic import BaseModel
+
+__version__ = "0.0.4"
 
 MAX_WORKERS: int = 4
 
@@ -17,11 +21,19 @@ def execption_handler(thread_name: str, exception: Exception) -> None:
     print(f"{thread_name}: {exception}")
 
 
-class Task:
+class Task(BaseModel):
+    callable: Callable
+    args: Union[List[Any], Tuple[Any]] = []
+    kwargs: Dict[str, Any] = {}
+
     def __init__(self, callable: Callable, *args, **kwargs):
-        self.callable = callable
-        self._args = args
-        self._kwargs = kwargs
+        super(Task, self).__init__(callable=callable, *args, **kwargs)
+
+    def run(self):
+        return self.callable(*self.args, **self.kwargs)
+
+    def __call__(self):
+        return self.run()
 
 
 class Worker(threading.Thread):
@@ -82,17 +94,16 @@ class Worker(threading.Thread):
         while not self.aborted():
             try:
                 task: Task = self.queue.get(timeout=0.5)
-                func, args, kwargs = task.callable, task._args, task._kwargs
+                # func, args, kwargs = task.callable, task.args, task.kwargs
                 self._idle.clear()
 
                 # the task is available to work with.
                 try:
-                    if callable(func):
-                        r = func(*args, **kwargs)
-                        self.result.put(r)
+                    r = task.run()  # or task()
+                    self.result.put(r)
 
-                        if self.callback:
-                            self.callback(r)
+                    if self.callback:
+                        self.callback(r)
 
                 except Exception as e:
                     if self.execption_handler is not None:
@@ -108,7 +119,8 @@ class Worker(threading.Thread):
                     break
                 continue
             except Exception as e:
-                pass
+                if self.execption_handler is not None:
+                    self.execption_handler(self.name, e)
 
             # pause the thread is _pause flag is set
             self._pause_now()
@@ -195,7 +207,7 @@ class Pool:
             while True:
                 result.append(self.result_queue.get(False))
                 self.result_queue.task_done()
-        except:
+        except Exception:
             # the result_queue is emply
             pass
 
