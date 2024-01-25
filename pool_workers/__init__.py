@@ -1,24 +1,39 @@
+from __future__ import annotations
+
 import os
 import threading
 import time
 from queue import Empty, Queue
+from typing import Callable, List, Optional
+
+MAX_WORKERS: int = 4
+
+if os.cpu_count() is not None:
+    MAX_WORKERS = os.cpu_count() + 4  # pylint: disable=unreachable # noqa
 
 
 # Default exception handler
-def execption_handler(thread_name, exception):
+def execption_handler(thread_name: str, exception: Exception) -> None:
     print(f"{thread_name}: {exception}")
+
+
+class Task:
+    def __init__(self, callable: Callable, *args, **kwargs):
+        self.callable = callable
+        self._args = args
+        self._kwargs = kwargs
 
 
 class Worker(threading.Thread):
     def __init__(
         self,
-        name,
-        queue,
+        name: str,
+        queue: Queue[Task],
         result=None,
-        wait_queue=False,
-        sleep=0.5,
-        callback=None,
-        execption_handler=execption_handler,
+        wait_queue: float = False,
+        sleep: float = 0.5,
+        callback: Optional[Callable] = None,
+        execption_handler: Optional[Callable] = None,
     ):
         threading.Thread.__init__(self)
         self.name = name
@@ -29,7 +44,7 @@ class Worker(threading.Thread):
         self._idle = threading.Event()
         self._pause = threading.Event()
         self.callback = callback
-        self.execption_handler = execption_handler
+        self.execption_handler = execption_handler  # Set a default exception handler
         self.wait_queue = wait_queue
 
     def abort(self, block=True):
@@ -66,8 +81,25 @@ class Worker(threading.Thread):
     def run(self):
         while not self.aborted():
             try:
-                func, args, kwargs = self.queue.get(timeout=0.5)
+                task: Task = self.queue.get(timeout=0.5)
+                func, args, kwargs = task.callable, task._args, task._kwargs
                 self._idle.clear()
+
+                # the task is available to work with.
+                try:
+                    if callable(func):
+                        r = func(*args, **kwargs)
+                        self.result.put(r)
+
+                        if self.callback:
+                            self.callback(r)
+
+                except Exception as e:
+                    if self.execption_handler is not None:
+                        self.execption_handler(self.name, e)
+                finally:
+                    self.queue.task_done()
+
             except Empty:
                 # the queue is empty.
                 self._idle.set()
@@ -78,18 +110,6 @@ class Worker(threading.Thread):
             except Exception as e:
                 pass
 
-            # the task is available to work with.
-            try:
-                r = func(*args, **kwargs)
-                self.result.put(r)
-                if self.callback:
-                    self.callback(r)
-
-            except Exception as e:
-                self.execption_handler(self.name, e)
-            finally:
-                self.queue.task_done()
-
             # pause the thread is _pause flag is set
             self._pause_now()
 
@@ -97,26 +117,28 @@ class Worker(threading.Thread):
 class Pool:
     def __init__(
         self,
-        max_workers=os.cpu_count() + 4,
-        name=None,
-        queue=None,
+        max_workers: int = MAX_WORKERS,
+        name: str = "",
+        queue: Optional[Queue[Task]] = None,
         wait_queue=True,
         result_queue=None,
         workers_sleep=0.5,
-        callback=None,
-        execption_handler=execption_handler,
+        callback: Optional[Callable] = None,
+        execption_handler: Optional[Callable] = None,
     ):
         self.name = name
         self.max_worker = max_workers
         self.callback = callback
         self.workers_sleep = workers_sleep
-        self.execption_handler = execption_handler
+        self.execption_handler = execption_handler  # Set a default exception handler
 
-        self.queue = queue if isinstance(queue, Queue) else Queue()
-        self.result_queue = result_queue if isinstance(result_queue, Queue) else Queue()
+        self.queue: Queue[Task] = queue if isinstance(queue, Queue) else Queue()
+        self.result_queue: Queue = (
+            result_queue if isinstance(result_queue, Queue) else Queue()
+        )
         self.wait_queue = wait_queue
 
-        self.threads = []
+        self.threads: List[Worker] = []
 
     def start(self):
         # reinitialize values
@@ -156,7 +178,6 @@ class Pool:
             t.resume()  # the thread should be working to abort it.
             t.abort()
         self.block(block)
-        self.result_queue = None
 
     def join(self, timeout=None):
         """wait until all the queue tasks be completed"""
