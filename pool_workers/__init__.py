@@ -1,19 +1,25 @@
 import os
-import time
 import threading
+import time
+from queue import Empty, Queue
 
-from queue import Queue, Empty
 
 # Default exception handler
 def execption_handler(thread_name, exception):
-    print(f'{thread_name}: {exception}')
+    print(f"{thread_name}: {exception}")
 
 
 class Worker(threading.Thread):
-
-    def __init__(self, name, queue, result=None, wait_queue=False, sleep=0.5, callback=None,
-        execption_handler=execption_handler):
-
+    def __init__(
+        self,
+        name,
+        queue,
+        result=None,
+        wait_queue=False,
+        sleep=0.5,
+        callback=None,
+        execption_handler=execption_handler,
+    ):
         threading.Thread.__init__(self)
         self.name = name
         self.queue = queue
@@ -25,7 +31,6 @@ class Worker(threading.Thread):
         self.callback = callback
         self.execption_handler = execption_handler
         self.wait_queue = wait_queue
-
 
     def abort(self, block=True):
         self._abort.set()
@@ -50,7 +55,7 @@ class Worker(threading.Thread):
             self.abort()
 
     def _pause_now(self):
-        """ block the code for a while """
+        """block the code for a while"""
         while self.paused():
             time.sleep(self.sleep)
 
@@ -89,10 +94,18 @@ class Worker(threading.Thread):
             self._pause_now()
 
 
-
 class Pool:
-    def __init__(self, max_workers=os.cpu_count() + 4, name=None, queue=None, wait_queue=True,
-        result_queue=None, workers_sleep=0.5, callback=None, execption_handler=execption_handler):
+    def __init__(
+        self,
+        max_workers=os.cpu_count() + 4,
+        name=None,
+        queue=None,
+        wait_queue=True,
+        result_queue=None,
+        workers_sleep=0.5,
+        callback=None,
+        execption_handler=execption_handler,
+    ):
         self.name = name
         self.max_worker = max_workers
         self.callback = callback
@@ -105,14 +118,22 @@ class Pool:
 
         self.threads = []
 
-
     def start(self):
         # reinitialize values
         self.threads = []
 
         # create all threads
         for i in range(self.max_worker):
-            self.threads.append(Worker(f'Worker_{i}_{self.name}', self.queue, self.result_queue, wait_queue=self.wait_queue, sleep=self.workers_sleep, callback=self.callback))
+            self.threads.append(
+                Worker(
+                    f"Worker_{i}_{self.name}",
+                    self.queue,
+                    self.result_queue,
+                    wait_queue=self.wait_queue,
+                    sleep=self.workers_sleep,
+                    callback=self.callback,
+                )
+            )
 
         # start all threads
         for t in self.threads:
@@ -130,23 +151,22 @@ class Pool:
         return self.queue.empty()
 
     def shutdown(self, block=False):
-        """ Abort all threads in the pool """
+        """Abort all threads in the pool"""
         for t in self.threads:
-            t.resume() # the thread should be working to abort it.
+            t.resume()  # the thread should be working to abort it.
             t.abort()
         self.block(block)
         self.result_queue = None
 
-
     def join(self, timeout=None):
-        """ wait until all the queue tasks be completed """
+        """wait until all the queue tasks be completed"""
         if timeout and self.is_alive():
             time.sleep(timeout)
         else:
             self.queue.join()
 
     def result(self, block=False):
-        """ return result as generator """
+        """return result as generator"""
         result = []
         if block and self.is_alive():
             self.join()
@@ -164,7 +184,7 @@ class Pool:
         self.shutdown()
 
     def is_paused(self):
-        return False not in ( t.paused() for t in self.threads )
+        return False not in (t.paused() for t in self.threads)
 
     def pause(self, timeout=0, block=False):
         for t in self.threads:
@@ -186,15 +206,19 @@ class Pool:
     def count(self):
         return len(self.threads)
 
-
     def update(self, n, block=False):
-
         # create necissary threads
         need = n - self.count()
         if need > 0:
             # create more threads
             for _ in range(need):
-                t = Worker(f'Worker_{(self.count())} ({self.name})', self.queue, self.result_queue, wait_queue=self.wait_queue, callback=self.callback)               
+                t = Worker(
+                    f"Worker_{(self.count())} ({self.name})",
+                    self.queue,
+                    self.result_queue,
+                    wait_queue=self.wait_queue,
+                    callback=self.callback,
+                )
                 t.start()
                 self.threads.append(t)
 
@@ -204,14 +228,10 @@ class Pool:
             threads = []
             for _ in range(need):
                 t = self.threads.pop()
-                t.resume() # the thread should be working to abort it.
+                t.resume()  # the thread should be working to abort it.
                 t.abort()
                 threads.append(t)
 
             # block until the extra threads dead.
-            while block and any(( t.is_alive() for t in threads )):
+            while block and any((t.is_alive() for t in threads)):
                 time.sleep(0.5)
-
-
-
-
