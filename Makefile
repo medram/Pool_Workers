@@ -1,12 +1,15 @@
+.PHONY: test
 
 all: help
-
-build:
-	# do the build
 
 lint:
 	flake8 .
 
+test:
+	pytest -v ./test
+
+build:
+	poetry build
 
 help:
 	@echo "No description yet!"
