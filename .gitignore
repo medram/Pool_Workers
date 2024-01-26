@@ -1,12 +1,19 @@
 *.egg-info
 .pyc
-__pycache__
+.coverage
 
+__pycache__/
 dist/
 build/
+
 tests/coverage_html/
 tests/.coverage
 tests/report/
-.venv
-venv
-.git
+
+venv/
+
+.venv/
+.git/
+.pytest_cache/
+.mypy_cache/
+htmlcov/
