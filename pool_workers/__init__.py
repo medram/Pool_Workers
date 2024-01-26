@@ -10,10 +10,11 @@ from pydantic import BaseModel
 
 __version__ = "0.0.4"
 
+CURRENT_CPU_COUNT = os.cpu_count()
 MAX_WORKERS: int = 4
 
-if os.cpu_count() is not None:
-    MAX_WORKERS = os.cpu_count() + 4  # pylint: disable=unreachable # noqa
+if CURRENT_CPU_COUNT is not None:
+    MAX_WORKERS = CURRENT_CPU_COUNT + 4
 
 
 # Default exception handler
@@ -61,6 +62,7 @@ class Worker(threading.Thread):
 
     def abort(self, block=True):
         self._abort.set()
+        self.pause()
         self.block(block)
 
     def aborted(self):
@@ -134,7 +136,7 @@ class Pool:
         queue: Optional[Queue[Task]] = None,
         wait_queue=True,
         result_queue=None,
-        workers_sleep=0.5,
+        workers_sleep=0.1,
         callback: Optional[Callable] = None,
         execption_handler: Optional[Callable] = None,
     ):
@@ -145,7 +147,7 @@ class Pool:
         self.execption_handler = execption_handler  # Set a default exception handler
 
         self.queue: Queue[Task] = queue if isinstance(queue, Queue) else Queue()
-        self.result_queue: Queue = (
+        self.result_queue: Queue[Any] = (
             result_queue if isinstance(result_queue, Queue) else Queue()
         )
         self.wait_queue = wait_queue
@@ -160,7 +162,7 @@ class Pool:
         for i in range(self.max_worker):
             self.threads.append(
                 Worker(
-                    f"Worker_{i}_{self.name}",
+                    f"Worker_{i+1}_{self.name}",
                     self.queue,
                     self.result_queue,
                     wait_queue=self.wait_queue,
@@ -246,7 +248,7 @@ class Pool:
             # create more threads
             for _ in range(need):
                 t = Worker(
-                    f"Worker_{(self.count())} ({self.name})",
+                    f"Worker_{(self.count()+1)} ({self.name})",
                     self.queue,
                     self.result_queue,
                     wait_queue=self.wait_queue,
