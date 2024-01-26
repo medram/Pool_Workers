@@ -1,7 +1,7 @@
 import os
 import time
 from queue import Queue
-from typing import Any, Dict, List, Union
+from typing import Dict, List, Union
 
 import pytest
 
