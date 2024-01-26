@@ -7,11 +7,9 @@ import pytest
 
 from pool_workers import MAX_WORKERS, Pool, Task, Worker
 
-# TODO: test pool results, callbacks, exception_handlers
-
 
 def work_function(x: int, y: int = 0) -> int:
-    time.sleep(0.5)
+    time.sleep(0.2)
     return x * y
 
 
@@ -32,7 +30,20 @@ def pool():
     for i in range(50):
         queue.put(Task(work_function, args=(5 * i,), kwargs={"y": 3 * i}))
 
-    return Pool(name="Pool", queue=queue)
+    def callable_function(result: int) -> None:
+        assert result  # Value exists
+
+    def log_exception(name: str, e: Exception) -> None:
+        # Log data for example
+        assert name != ""
+        assert str(e) != ""
+
+    return Pool(
+        name="Pool",
+        queue=queue,
+        callback=callable_function,
+        execption_handler=log_exception,
+    )
 
 
 def test_task_creation(task: Task):
@@ -45,6 +56,14 @@ def test_task_run(task: Task):
     assert task.run() == task.args[0] * task.kwargs.get("y")
 
 
+def test_task_run_as_function(task: Task):
+    assert task() == task.args[0] * task.kwargs.get("y")
+
+
+def test_worker_delete(worker: Worker):
+    del worker
+
+
 def test_pool_creation():
     pool = Pool(name="Pool")
 
@@ -53,6 +72,23 @@ def test_pool_creation():
     assert pool.is_alive() == False
     assert pool.is_paused() == True
     assert pool.count() == 0
+
+
+def test_pool_exception():
+    # Clear the queue
+    queue = Queue()
+    error_massage = "Custom Error :D"
+
+    def work_function():
+        raise Exception(error_massage)
+
+    def log_exception(name: str, e: Exception) -> None:
+        assert str(e) == error_massage
+
+    queue.put(Task(work_function), block=False)
+    pool = Pool(name="Pool", queue=queue, execption_handler=log_exception)
+    pool.start()
+    pool.shutdown()
 
 
 def test_pool_shutdown(pool: Pool):
@@ -92,6 +128,20 @@ def test_pool_results():
                 result = int(r.get("result", 0))
 
         assert result == task.run().get("result")
+
+
+def test_pool_update(pool: Pool):
+    pool.start()
+    # Let's the empty the queue (Process all tasks)
+    pool.join()
+    # Let's updates the number of workers
+    pool.update(10)
+    assert pool.count() == 10
+    pool.update(12)
+    assert pool.count() == 12
+    pool.update(5, block=True)
+    assert pool.count() == 5
+    pool.shutdown()
 
 
 def test_pool_functionality(pool: Pool):

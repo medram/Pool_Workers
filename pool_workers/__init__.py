@@ -18,7 +18,7 @@ if CURRENT_CPU_COUNT is not None:
 
 
 # Default exception handler
-def execption_handler(thread_name: str, exception: Exception) -> None:
+def execption_handler_function(thread_name: str, exception: Exception) -> None:
     print(f"{thread_name}: {exception}")
 
 
@@ -46,7 +46,7 @@ class Worker(threading.Thread):
         wait_queue: float = False,
         sleep: float = 0.1,
         callback: Optional[Callable] = None,
-        execption_handler: Optional[Callable] = None,
+        execption_handler: Optional[Callable[[str, Exception], None]] = None,
     ):
         threading.Thread.__init__(self)
         self.name = name
@@ -57,7 +57,11 @@ class Worker(threading.Thread):
         self._idle = threading.Event()
         self._pause = threading.Event()
         self.callback = callback
-        self.execption_handler = execption_handler  # Set a default exception handler
+        self.execption_handler = (
+            execption_handler_function
+            if execption_handler is None
+            else execption_handler
+        )  # Set a default exception handler
         self.wait_queue = wait_queue
 
     def abort(self, block=True):
@@ -138,13 +142,17 @@ class Pool:
         result_queue=None,
         workers_sleep=0.1,
         callback: Optional[Callable] = None,
-        execption_handler: Optional[Callable] = None,
+        execption_handler: Optional[Callable[[str, Exception], None]] = None,
     ):
         self.name = name
         self.max_worker = max_workers
         self.callback = callback
         self.workers_sleep = workers_sleep
-        self.execption_handler = execption_handler  # Set a default exception handler
+        self.execption_handler = (
+            execption_handler_function
+            if execption_handler is None
+            else execption_handler
+        )  # Set a default exception handler
 
         self.queue: Queue[Task] = queue if isinstance(queue, Queue) else Queue()
         self.result_queue: Queue[Any] = (
@@ -168,6 +176,7 @@ class Pool:
                     wait_queue=self.wait_queue,
                     sleep=self.workers_sleep,
                     callback=self.callback,
+                    execption_handler=self.execption_handler,
                 )
             )
 
