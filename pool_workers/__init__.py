@@ -44,7 +44,7 @@ class Worker(threading.Thread):
         queue: Queue[Task],
         result=None,
         wait_queue: float = False,
-        sleep: float = 0.5,
+        sleep: float = 0.1,
         callback: Optional[Callable] = None,
         execption_handler: Optional[Callable] = None,
     ):
