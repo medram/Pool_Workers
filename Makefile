@@ -5,14 +5,22 @@ all: help
 lint:
 	flake8 .
 
-test:
-	pytest -v ./tests -s
+test:	lint mypy coverage # Run all the tests
+
+
+pytest:
+	pytest -vs ./tests
+
+coverage:
+	coverage run -m pytest -vs ./tests && coverage report
+
+mypy:
+	mypy --check-untyped-defs pool_workers/
 
 build:
 	poetry build
 
 publish: dist
-	# poetry publish --build --username $PYPI_USERNAME --password $PYPI_PASSWORD
 	twine upload dist/*
 
 help:
