@@ -25,7 +25,7 @@ def worker():
 
 @pytest.fixture
 def pool():
-    queue = Queue()
+    queue: Queue[Task] = Queue()
     # Add some tasks
     for i in range(50):
         queue.put(Task(work_function, args=(5 * i,), kwargs={"y": 3 * i}))
@@ -76,7 +76,7 @@ def test_pool_creation():
 
 def test_pool_exception():
     # Clear the queue
-    queue = Queue()
+    queue: Queue[Task] = Queue()
     error_massage = "Custom Error :D"
 
     def work_function():
@@ -103,7 +103,7 @@ def test_pool_results():
     def custom_work_function(id, x=0, y=0):
         return {"id": id, "result": x * y}
 
-    queue = Queue()
+    queue: Queue[Task] = Queue()
     tasks: List[Task] = []
     # Add some tasks
     for i in range(50):
