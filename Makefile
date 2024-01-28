@@ -24,7 +24,7 @@ publish: dist
 	twine upload dist/*
 
 clean:
-	rm -fr .coverage .pytest_cache .mypy_cache htmlcov
+	rm -fr .coverage .pytest_cache .mypy_cache htmlcov .tox
 
 help:
 	@echo "No description yet!"
