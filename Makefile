@@ -17,7 +17,7 @@ mypy:
 	mypy --check-untyped-defs ./pool_workers ./tests
 
 tox:
-	tox
+	tox p -e ALL
 
 build:
 	poetry build
