@@ -12,7 +12,7 @@ pytest:
 	pytest -vs ./tests
 
 coverage:
-	coverage run -m pytest -vs ./tests && coverage report
+	coverage run --source ./pool_workers -m pytest -vs ./tests && coverage report
 
 mypy:
 	mypy --check-untyped-defs pool_workers/
