@@ -23,5 +23,8 @@ build:
 publish: dist
 	twine upload dist/*
 
+clean:
+	rm -fr .coverage .pytest_cache .mypy_cache htmlcov
+
 help:
 	@echo "No description yet!"
