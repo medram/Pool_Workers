@@ -31,3 +31,8 @@ tox = "^4.12.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+#### For Linting ####
+[tool.mypy]
+check_untyped_defs = true
+ignore_missing_imports = true
