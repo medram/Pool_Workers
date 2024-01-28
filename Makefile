@@ -7,7 +7,6 @@ lint:
 
 test:	lint mypy coverage # Run all the tests
 
-
 pytest:
 	pytest -vs ./tests
 
@@ -17,6 +16,9 @@ coverage:
 mypy:
 	mypy --check-untyped-defs ./pool_workers ./tests
 
+tox:
+	tox
+
 build:
 	poetry build
 
@@ -24,7 +26,7 @@ publish: dist
 	twine upload dist/*
 
 clean:
-	rm -fr .coverage .pytest_cache .mypy_cache htmlcov .tox
+	rm -fr .coverage .pytest_cache .mypy_cache htmlcov .tox dist
 
 help:
 	@echo "No description yet!"
