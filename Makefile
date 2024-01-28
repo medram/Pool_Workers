@@ -15,7 +15,7 @@ coverage:
 	coverage run --source ./pool_workers -m pytest -vs ./tests && coverage report
 
 mypy:
-	mypy --check-untyped-defs pool_workers/
+	mypy --check-untyped-defs ./pool_workers ./tests
 
 build:
 	poetry build
