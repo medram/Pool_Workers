@@ -1,0 +1,48 @@
+name: linting (flake8 & mypy)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+      - "main"
+    tags:
+      - "*"
+  pull_request:
+
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    steps:
+      - name: Get the repo!
+        uses: actions/checkout@v4
+
+      - name: Install Poetry
+        run: |
+          pip install poetry
+
+      - name: Use Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install
+
+      - name: Run Tests
+        run: |
+          poetry run make test
+
+
+
+
+
