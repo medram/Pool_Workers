@@ -1,4 +1,4 @@
-name: tests
+name: linting (flake8 & mypy)
 
 on:
   workflow_dispatch:
@@ -35,8 +35,6 @@ jobs:
 
       - name: Linting (flake8 & mypy)
         run: |
-          poetry run flake8 --version
-          poetry run mypy --version
           poetry run make lint
 
 
