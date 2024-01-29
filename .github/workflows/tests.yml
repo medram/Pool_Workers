@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
-        os: [ubuntu-latest, macOS-latest] # windows-latest
+        os: [ubuntu-latest, macOS-latest]
 
     steps:
       - name: Get the repo!
@@ -40,6 +40,7 @@ jobs:
 
       - name: Run Tests
         run: |
+          python3 -V
           poetry run make test
 
 
