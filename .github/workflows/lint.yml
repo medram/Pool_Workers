@@ -1,4 +1,4 @@
-name: linting (flake8 & mypy)
+name: Linting (flake8 & mypy)
 
 on:
   workflow_dispatch:
