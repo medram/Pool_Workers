@@ -26,7 +26,7 @@ jobs:
       - name: Use Python 3.8
         uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: "3.8"
           cache: poetry
 
       - name: Install dependencies
@@ -35,6 +35,7 @@ jobs:
 
       - name: Linting (flake8 & mypy)
         run: |
+          # This will run flake8 & mypy
           poetry run make lint
 
 
