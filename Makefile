@@ -2,8 +2,7 @@
 
 all: help
 
-lint:
-	flake8 .
+lint:	flake8 mypy
 
 test:	lint mypy coverage # Run all the tests
 
@@ -12,6 +11,9 @@ pytest:
 
 coverage:
 	coverage run --source ./pool_workers -m pytest -vs ./tests && coverage report
+
+flake8:
+	flake8 ./pool_workers ./tests
 
 mypy:
 	mypy --check-untyped-defs ./pool_workers ./tests
