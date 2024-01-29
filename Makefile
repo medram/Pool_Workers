@@ -10,7 +10,8 @@ pytest:
 	pytest -vs ./tests
 
 coverage:
-	coverage run --source ./pool_workers -m pytest -vs ./tests && coverage report
+	coverage run --source ./pool_workers -m pytest -vs ./tests
+	coverage report --fail-under=90
 
 flake8:
 	flake8 ./pool_workers ./tests
