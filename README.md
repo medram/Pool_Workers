@@ -1,5 +1,8 @@
+[![linting (flake8 & mypy)](https://github.com/medram/Pool_Workers/actions/workflows/tests.yml/badge.svg)](https://github.com/medram/Pool_Workers/actions/workflows/lint.yml)
+
 # Pool_Workers
 Pool_Workers is a small package for dealing with pools, workers and queues.
+
 
 ## Installation:
 ```bash
