@@ -19,11 +19,11 @@ jobs:
       - name: Get the repo!
         uses: actions/checkout@v4
 
-      - name: Uses Python 3.8
+      - name: Use Python 3.8
         uses: actions/setup-python@v5
         with:
           python-version: 3.8
-          cache: poetry
+          # cache: poetry
 
       - name: Install dependencies
         run: |
