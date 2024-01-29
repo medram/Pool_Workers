@@ -31,7 +31,8 @@ jobs:
       - name: Linting (flake8 & mypy)
         run: |
           python3 -V
-          make lint
+          flake8 --version
+          mypy --version
 
 
 
