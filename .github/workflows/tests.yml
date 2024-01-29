@@ -1,0 +1,42 @@
+name: tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+      - "main"
+    tags:
+      - "*"
+  pull_request:
+
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the repo!
+        uses: actions/checkout@v4
+
+      - name: Uses Python 3.8
+        uses: actions/setup-python@5
+        with:
+          python-version: 3.8
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: Linting (flake8 & mypy)
+        run:
+          make lint
+
+
+
+
+
+
+
