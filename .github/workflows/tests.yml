@@ -16,23 +16,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Install dependencies
+      - name: Get the repo!
+        uses: actions/checkout@v4
+
+      - name: Install Poetry
         run: |
           pip install poetry
 
-      - uses: actions/setup-python@v5
+      - name: Use Python 3.8
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
           cache: poetry
 
-      - name: Install dep
+      - name: Install dependencies
         run: |
-          python3 -V
           poetry install
 
       - name: Linting (flake8 & mypy)
         run: |
+          poetry show
           python3 -V
           python3 -m flake8 --version
           python3 -m mypy --version
