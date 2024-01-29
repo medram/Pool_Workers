@@ -35,11 +35,9 @@ jobs:
 
       - name: Linting (flake8 & mypy)
         run: |
-          poetry show
-          python3 -V
-          python3 -m flake8 --version
-          python3 -m mypy --version
-
+          poetry flake8 --version
+          poetry mypy --version
+          poetry make lint
 
 
 
