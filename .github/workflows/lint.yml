@@ -37,9 +37,3 @@ jobs:
         run: |
           # This will run flake8 & mypy
           poetry run make lint
-
-
-
-
-
-
