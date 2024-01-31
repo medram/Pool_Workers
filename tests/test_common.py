@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import os
 import time
 from queue import Queue
-from typing import Dict, List, Union
 
 import pytest
 
@@ -104,7 +105,7 @@ def test_pool_results():
         return {"id": id, "result": x * y}
 
     queue: Queue[Task] = Queue()
-    tasks: List[Task] = []
+    tasks: list[Task] = []
     # Add some tasks
     for i in range(50):
         task = Task(
@@ -117,7 +118,7 @@ def test_pool_results():
 
     pool = Pool(name="Pool", queue=queue)
     pool.start()
-    results: List[Dict[str, Union[str, int]]] = pool.result(block=True)
+    results: list[dict[str, str | int]] = pool.result(block=True)
     pool.shutdown()
 
     for task in tasks:
