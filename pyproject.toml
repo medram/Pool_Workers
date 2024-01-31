@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pool-workers"
-version = "0.0.5"
+version = "0.0.6"
 description = "pool-workers is a light weight package for dealing & managing pools, workers and queues."
 authors = ["medram <mramouchy@gmail.com>"]
 documentation = "https://github.com/medram/pool_workers"
