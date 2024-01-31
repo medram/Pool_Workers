@@ -32,6 +32,11 @@ repos:
     # - flake8-comprehensions
     # - flake8-tidy-imports
 
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: "v1.8.0"
+  hooks:
+    - id: mypy
+
 - repo: https://github.com/asottile/pyupgrade
   rev: v3.10.1
   hooks:
