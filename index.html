@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" /><meta name="author" content="medram" /><link rel="canonical" href="https://github.com/medram/Pool_Workers/" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Pool Workers</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installation";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = "/medram/Pool_Workers/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Pool Workers
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">Installation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#example-1">Example 1</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#example-2">Example 2</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Pool Workers</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/medram/Pool_Workers/docs/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="introduction">Introduction</h1>
+<p>Pool_Workers is a small python package for managing pools, workers and queues with ease.</p>
+<h2 id="installation">Installation</h2>
+<pre><code class="language-bash">pip install pool-workers
+</code></pre>
+<h2 id="functions">Functions</h2>
+<p>The followings are some of the most improtant functions to manage Pool and Workers:</p>
+<pre><code class="language-python">&quot;&quot;&quot;
+Default params:
+Pool(max_workers=os.cpu_count() + 4, name=None, queue=None, wait_queue=True,
+    result_queue=None, workers_sleep=0.1, callback=None, execption_handler=execption_handler)
+&quot;&quot;&quot;
+from pool_workers import Pool
+
+pool = Pool(...)
+
+pool.start()        # Start all workers to process queue tasks.
+pool.is_alive()     # Return true if is there any alive worker, else false.
+pool.is_idle()      # Return true if is there any worker in idle mode, else false.
+pool.is_done()      # Return true if the queue is empty (no tasks left to process).
+pool.is_paused()    # Return true if the all workers have been paused, else false.
+pool.shutdown()     # Abort all workers
+pool.join()         # Wait for all workers to finish the all queue tasks.
+pool.result()       # return a list result
+pool.pause()        # pause the all workers
+pool.resume()       # resume the all workers
+pool.count()        # count workers
+pool.update()       # adjust the number of workers
+
+&quot;&quot;&quot;
+default params:
+Worker(name, queue, result=None, wait_queue=False, sleep=0.5, callback=None,
+    execption_handler=execption_handler)
+&quot;&quot;&quot;
+from pool_workers import Worker
+
+worker = Worker(...)
+
+worker.start()
+worker.abort()      # stop worker in a safe way
+worker.aborted()
+worker.pause()
+worker.paused()
+worker.resume()
+# And like a normal thread, worker has also:
+worker.is_alive()
+worker.join()
+</code></pre>
+<h2 id="usage">Usage</h2>
+<h3 id="example-1">Example 1</h3>
+<pre><code class="language-python">import time
+import threading
+import random
+
+from queue import Queue
+from pool_workers import Pool, Task
+
+# Our logic to be performed Asynchronously.
+def our_process(a):
+    t = threading.current_thread()
+    # just to semulate how mush time this logic is going to take to be done.
+    time.sleep(random.uniform(0, 3))
+    print(f'{t.getName()} is finished the task {a} ...')
+
+
+# Our function to handle thrown exceptions from 'our_process' logic.
+def execption_handler(thread_name, exception):
+    print(f'{thread_name}: {exception}')
+
+
+# create a queue &amp; pool.
+q = Queue()
+pool = Pool(name='Pool_1', queue=q, wait_queue=False, execption_handler=execption_handler)
+
+# adding some tasks the the queue.
+for i in range(10):
+    # Creating task with args and kwargs and push it into the queue.
+    task = Task(our_process, args=(i,), kwargs={})
+    q.put(task)
+
+try:
+    # start the Pool
+    pool.start()
+    # go back to the main thread from time to another to check the KeyboardInterrupt
+    while pool.is_alive():
+        pool.join(0.5)
+
+except (KeyboardInterrupt, SystemExit):
+    # shutdown the pool by aborting its Workers/threads.
+    pool.shutdown()
+
+
+</code></pre>
+<pre><code class="language-bash"># Output result
+Worker_1_Pool_1 is finished the task 1 ...
+Worker_1_Pool_1 is finished the task 2 ...
+Worker_0_Pool_1 is finished the task 0 ...
+Worker_0_Pool_1 is finished the task 4 ...
+Worker_0_Pool_1 is finished the task 5 ...
+Worker_1_Pool_1 is finished the task 3 ...
+Worker_0_Pool_1 is finished the task 6 ...
+Worker_1_Pool_1 is finished the task 7 ...
+Worker_0_Pool_1 is finished the task 8 ...
+Worker_0_Pool_1: The Queue is empty.
+Worker_1_Pool_1 is finished the task 9 ...
+Worker_1_Pool_1: The Queue is empty.
+Worker_0_Pool_1 is stopped
+Worker_1_Pool_1 is stopped
+Pool_1 is shutted down
+</code></pre>
+<h3 id="example-2">Example 2</h3>
+<pre><code class="language-python">import time
+import threading
+import random
+
+from queue import Queue
+from pool_workers import Worker, Task
+
+# Our logic to be performed Asynchronously.
+def our_process(a):
+    t = threading.current_thread()
+    # just to semulate how mush time this logic is going to take to be done.
+    time.sleep(random.uniform(0, 3))
+    print(f'{t.getName()} is finished the task {a} ...')
+
+
+# Our function to handle thrown exceptions from 'our_process' logic.
+def execption_handler(thread_name, exception):
+    print(f'{thread_name}: {exception}')
+
+
+# create a queue &amp; pool.
+q = Queue()
+t = Worker(name='worker', queue=q, wait_queue=False, sleep=0.1, execption_handler=execption_handler)
+
+# adding some tasks the the queue.
+for i in range(10):
+    # Creating task with args and kwargs and push it into the queue.
+    task = Task(our_process, args=(i,), kwargs={})
+    q.put(task)
+
+try:
+    # start the Pool
+    t.start()
+    # block the code execution here to check the KeyboardInterrupt (to stop the worker safely)
+    while t.is_alive():
+        t.join(0.5)
+
+    # Can't go here until the worker finishes his work.
+
+except (KeyboardInterrupt, SystemExit):
+    # stop the Worker/thread.
+    t.abort()
+
+</code></pre>
+<pre><code class="language-bash"># Output result
+worker is finished the task 0 ...
+worker is finished the task 1 ...
+worker is finished the task 2 ...
+worker is finished the task 3 ...
+worker is finished the task 4 ...
+worker is finished the task 5 ...
+worker is finished the task 6 ...
+worker is finished the task 7 ...
+worker is finished the task 8 ...
+worker is finished the task 9 ...
+</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/medram/Pool_Workers" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.5.3
+Build Date UTC : 2024-01-31 19:23:23.453842+00:00
+-->
