@@ -4,7 +4,7 @@ import os
 import threading
 import time
 from queue import Empty, Queue
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable
 
 from pydantic import BaseModel
 
@@ -24,11 +24,11 @@ def execption_handler_function(thread_name: str, exception: Exception) -> None:
 
 class Task(BaseModel):
     callable: Callable
-    args: Union[List[Any], Tuple[Any]] = []
-    kwargs: Dict[str, Any] = {}
+    args: list[Any] | tuple[Any] = []
+    kwargs: dict[str, Any] = {}
 
     def __init__(self, callable: Callable, *args, **kwargs):
-        super(Task, self).__init__(callable=callable, *args, **kwargs)
+        super().__init__(callable=callable, *args, **kwargs)
 
     def run(self):
         return self.callable(*self.args, **self.kwargs)
@@ -45,8 +45,8 @@ class Worker(threading.Thread):
         result=None,
         wait_queue: float = False,
         sleep: float = 0.1,
-        callback: Optional[Callable] = None,
-        execption_handler: Optional[Callable[[str, Exception], None]] = None,
+        callback: Callable | None = None,
+        execption_handler: Callable[[str, Exception], None] | None = None,
     ):
         threading.Thread.__init__(self)
         self.name = name
@@ -137,12 +137,12 @@ class Pool:
         self,
         max_workers: int = MAX_WORKERS,
         name: str = "",
-        queue: Optional[Queue[Task]] = None,
+        queue: Queue[Task] | None = None,
         wait_queue=True,
         result_queue=None,
         workers_sleep=0.1,
-        callback: Optional[Callable] = None,
-        execption_handler: Optional[Callable[[str, Exception], None]] = None,
+        callback: Callable | None = None,
+        execption_handler: Callable[[str, Exception], None] | None = None,
     ):
         self.name = name
         self.max_worker = max_workers
@@ -160,7 +160,7 @@ class Pool:
         )
         self.wait_queue = wait_queue
 
-        self.threads: List[Worker] = []
+        self.threads: list[Worker] = []
 
     def start(self):
         # reinitialize values
@@ -187,7 +187,7 @@ class Pool:
         return True
 
     def is_alive(self):
-        return any((t.is_alive() for t in self.threads))
+        return any(t.is_alive() for t in self.threads)
 
     def is_idle(self):
         return False not in (t._idle.is_set() for t in self.threads)
@@ -277,5 +277,5 @@ class Pool:
                 threads.append(t)
 
             # block until the extra threads dead.
-            while block and any((t.is_alive() for t in threads)):
+            while block and any(t.is_alive() for t in threads):
                 time.sleep(0.5)
