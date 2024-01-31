@@ -2,7 +2,7 @@ name: PyPI Sync
 
 on:
   release:
-    types: ["created"]
+    types: published
 
 jobs:
   publish:
