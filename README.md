@@ -1,5 +1,5 @@
 
-[![linting (flake8 & mypy)](https://github.com/medram/Pool_Workers/actions/workflows/lint.yml/badge.svg)](https://github.com/medram/Pool_Workers/actions/workflows/lint.yml)  [![Tests & Coverage](https://github.com/medram/Pool_Workers/actions/workflows/tests.yml/badge.svg)](https://github.com/medram/Pool_Workers/actions/workflows/tests.yml)
+[![linting (flake8 & mypy)](https://github.com/medram/Pool_Workers/actions/workflows/lint.yml/badge.svg)](https://github.com/medram/Pool_Workers/actions/workflows/lint.yml)  [![Tests & Coverage](https://github.com/medram/Pool_Workers/actions/workflows/tests.yml/badge.svg)](https://github.com/medram/Pool_Workers/actions/workflows/tests.yml) [![Docs](https://github.com/medram/Pool_Workers/actions/workflows/docs.yml/badge.svg)](https://github.com/medram/Pool_Workers/actions/workflows/docs.yml)
 
 # Pool_Workers
 Pool_Workers is a small package for dealing with pools, workers and queues.
