@@ -1,0 +1,14 @@
+site_name: Pool Workers
+site_url: https://github.com/medram/Pool_Workers
+repo_name: GitHub
+repo_url: https://github.com/medram/Pool_Workers
+site_author: medram
+
+# To fix the URI path
+edit_uri: "docs/docs"
+
+nav:
+  - Installation: index.md
+
+theme:
+  name: readthedocs

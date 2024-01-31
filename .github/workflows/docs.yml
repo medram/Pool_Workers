@@ -1,0 +1,24 @@
+name: Docs
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "docs/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pip dependencies
+        run: pip install -r docs/requirements.txt
+
+      - name: Deploy docs to GitHub
+        run: |
+          cd docs
+          mkdocs build
+          mkdocs gh-deploy --force
