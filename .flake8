@@ -2,3 +2,6 @@
 max-line-length = 110
 exclude = .git,__pycache__,venv,.venv
 extend-ignore = E712
+filename =
+	./pool_workers
+	./tests

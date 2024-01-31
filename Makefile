@@ -14,10 +14,10 @@ coverage:
 	coverage report --fail-under=90
 
 flake8:
-	flake8 ./pool_workers ./tests
+	flake8 # all configs in ".flake8" file
 
 mypy:
-	mypy
+	mypy # All configs in "pyproject.toml" file
 
 tox:
 	tox p -e ALL
