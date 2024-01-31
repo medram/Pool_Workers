@@ -4,12 +4,14 @@
 # Pool_Workers
 Pool_Workers is a small package for dealing with pools, workers and queues.
 
+## 📃 Docs
+https://medram.github.io/Pool_Workers
 
-## Installation:
+## 📥 Installation:
 ```bash
 pip install pool-workers
 ```
-## More info:
+## ℹ️ More info:
 Usefull functions for Pool as well as Worker.
 
 ```python
