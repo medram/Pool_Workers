@@ -24,7 +24,7 @@ def execption_handler_function(thread_name: str, exception: Exception) -> None:
 
 class Task(BaseModel):
     callable: Callable
-    args: list[Any] | tuple[Any] = []
+    args: list[Any] = []
     kwargs: dict[str, Any] = {}
 
     def __init__(self, callable: Callable, *args, **kwargs):
