@@ -11,10 +11,13 @@ tests/.coverage
 tests/report/
 
 venv/
-
 .venv/
 .git/
 .pytest_cache/
 .mypy_cache/
 .tox/
 htmlcov/
+
+# Ignore docs build files
+site/
+docs/site
