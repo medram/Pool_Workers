@@ -17,8 +17,10 @@ jobs:
       - name: Install pip dependencies
         run: pip install -r docs/requirements.txt
 
-      - name: Deploy docs to GitHub
+      - name: Build & Deploy docs to GitHub
         run: |
           cd docs
           mkdocs build
           mkdocs gh-deploy --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
