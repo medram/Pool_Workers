@@ -1,5 +1,5 @@
 # Introduction
-Pool_Workers is a small python package for dealing with pools, workers and queues with ease.
+Pool_Workers is a small python package for managing pools, workers and queues with ease.
 
 ## Installation
 ```bash
