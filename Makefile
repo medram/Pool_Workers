@@ -17,7 +17,7 @@ flake8:
 	flake8 ./pool_workers ./tests
 
 mypy:
-	mypy --check-untyped-defs ./pool_workers ./tests
+	mypy
 
 tox:
 	tox p -e ALL

@@ -33,8 +33,9 @@ pre-commit = "^3.6.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-#### For Linting ####
+#### For lint checking ####
 [tool.mypy]
+python_version = "3.9" # check linting based on Python 3.9
 check_untyped_defs = true
 ignore_missing_imports = true
-python_version = "3.9" # check linting based on Python 3.9
+files = ["./pool_workers", "./tests"]
