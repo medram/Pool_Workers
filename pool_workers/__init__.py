@@ -8,7 +8,7 @@ from typing import Any, Callable
 
 from pydantic import BaseModel
 
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 CURRENT_CPU_COUNT = os.cpu_count()
 MAX_WORKERS: int = 4
